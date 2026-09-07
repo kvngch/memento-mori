@@ -20,9 +20,11 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-private const val LIVED = 0xFFE6E1D7.toInt()
+// Le temps qui reste brille, celui qui est passe est eteint : le widget s'eteint
+// case par case au lieu de se remplir.
+private const val REMAINING = 0xFFE6E1D7.toInt()
 private const val NOW = 0xFFC0392B.toInt()
-private const val LEFT = 0xFF262421.toInt()
+private const val SPENT = 0xFF262421.toInt()
 private const val DIM = 0xFF6E6A63.toInt()
 
 class MementoWidget : AppWidgetProvider() {
@@ -107,7 +109,7 @@ private fun draw(width: Int, height: Int, life: Life?, scale: Scale): Bitmap {
     text.letterSpacing = 0f
 
     if (life == null) {
-        text.color = LIVED
+        text.color = REMAINING
         text.textSize = max(11f, h * 0.030f)
         canvas.drawText("Toucher pour régler", w / 2f, h / 2f, text)
         canvas.drawText("la date de naissance", w / 2f, h / 2f + text.textSize * 1.4f, text)
@@ -135,7 +137,7 @@ private fun draw(width: Int, height: Int, life: Life?, scale: Scale): Bitmap {
     canvas.drawText(scale.remaining, w / 2f, labelY, text)
     text.letterSpacing = 0f
 
-    text.color = LIVED
+    text.color = REMAINING
     text.textSize = bigSize
     canvas.drawText(numbers.format(life.remaining), w / 2f, bigY, text)
 
@@ -156,9 +158,9 @@ private fun draw(width: Int, height: Int, life: Life?, scale: Scale): Bitmap {
     val corner = if (gapX == 0f) 0f else (min(cellW, cellH) - 2 * gap) / 2f
     for (i in 0 until life.total) {
         paint.color = when {
-            i < life.lived -> LIVED
+            i < life.lived -> SPENT
             i == life.lived -> NOW
-            else -> LEFT
+            else -> REMAINING
         }
         val x = pad + (i % scale.cols) * cellW
         val y = top + (i / scale.cols) * cellH

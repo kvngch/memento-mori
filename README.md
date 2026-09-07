@@ -1,12 +1,13 @@
 # Memento Mori
 
 Widget d'écran d'accueil Android qui affiche la vie en semaines. Une case par semaine,
-52 par ligne, donc une ligne par année. Les semaines révolues sont pleines, la semaine en
-cours est rouge, celles qui restent sont éteintes. La grille se règle aussi en mois, ou en
-jours, où chaque ligne devient la barre de progression de son année.
+52 par ligne, donc une ligne par année. Les semaines qui restent brillent, la semaine en
+cours est rouge, celles qui sont passées sont éteintes : la grille s'éteint case par case.
+Elle se règle aussi en mois, ou en jours, où chaque ligne est une année qui s'éteint de
+gauche à droite.
 
 <p align="center">
-  <img src="docs/apercu.png" width="300" alt="Le widget : une grille de 4174 points, les 1890 premiers en blanc, le suivant en rouge, et 2284 semaines restantes annoncées sous la grille">
+  <img src="docs/apercu.png" width="300" alt="Le widget : une grille de 4174 points, les 1890 premiers éteints, le suivant en rouge, les 2284 derniers en blanc, et le compte des semaines restantes sous la grille">
 </p>
 
 Sous la grille, le nombre de semaines qui restent, le total et la part déjà vécue.
