@@ -1,28 +1,54 @@
 # Memento Mori
 
-Widget d'écran d'accueil Android : la vie entière en semaines, une case par semaine,
-52 par ligne. Les semaines révolues sont pleines, la semaine en cours est rouge, celles
-qui restent sont éteintes. Sous la grille, le nombre de semaines restantes.
+Widget d'écran d'accueil Android qui affiche une vie entière en semaines. Une case par
+semaine, 52 par ligne, donc une ligne par année. Les semaines révolues sont pleines, la
+semaine en cours est rouge, celles qui restent sont éteintes.
 
-Aucune permission, aucune dépendance, aucun réseau. Le widget se redessine une fois par jour.
+<p align="center">
+  <img src="docs/apercu.png" width="300" alt="Le widget : une grille de 4174 points, les 1890 premiers en blanc, le suivant en rouge, et 2284 semaines restantes annoncées sous la grille">
+</p>
+
+Sous la grille : le nombre de semaines qui restent, le total, la part déjà vécue.
 
 ## Installation
 
-Via [Obtainium](https://github.com/ImranR98/Obtainium) : ajouter une application avec
-l'URL `https://github.com/kvngch/memento-mori`, les mises à jour suivent les releases.
-Sinon, télécharger l'APK de la dernière release et l'installer.
+Avec [Obtainium](https://github.com/ImranR98/Obtainium), ajouter une application depuis
+l'URL de ce dépôt : les mises à jour suivent les releases. Sinon, télécharger l'APK de la
+[dernière release](https://github.com/kvngch/memento-mori/releases/latest) et l'installer.
 
-Poser le widget sur l'écran d'accueil, l'étirer à toute la grille, régler la date de
-naissance dans le sélecteur qui s'ouvre. Un appui sur le widget rouvre ce réglage.
+L'application n'a pas d'écran à elle : elle n'apparaît pas dans le tiroir d'applications,
+seulement dans le sélecteur de widgets. Posez le widget, étirez-le à toute la grille de
+l'écran d'accueil, puis renseignez la date de naissance et l'âge de fin dans les deux
+sélecteurs qui s'ouvrent. Un appui sur le widget rouvre ces réglages.
 
-## Réglages
+## Ce qu'il fait, et ce qu'il ne fait pas
 
-L'espérance de vie est fixée à 80 ans dans `EXPECTANCY_YEARS` (`app/src/main/java/fr/kvngch/memento/Life.kt`).
+- Aucune permission dans le manifeste, aucune dépendance, aucun réseau, aucune analytique.
+  Les deux réglages restent dans les préférences de l'application.
+- APK de 620 Ko, redessiné une fois par jour.
+- Android 8.0 ou plus récent.
 
-## Publier une version
+## Sous le capot
 
-1. Incrémenter `versionCode` et `versionName` dans `app/build.gradle.kts`.
-2. Commiter, poser un tag `vX.Y.Z` et le pousser : la CI construit l'APK signé et le publie.
+Le widget est un bitmap unique, dessiné au `Canvas` et posé dans un seul `ImageView` :
+une grille de 4174 points ne peut pas être faite de `RemoteViews`. Le système plafonne la
+mémoire d'un widget à six octets par pixel d'écran, donc le bitmap ne dépasse jamais les
+dimensions de l'écran. Comme un bitmap ne dit rien à un lecteur d'écran, le décompte est
+répété en toutes lettres dans la description de contenu.
 
-Le keystore de signature vit dans le vault (`PERSO/projects/memento-mori/_secrets/`),
-ses copies sont chargées en secrets Actions. Le perdre casse les mises à jour.
+Le total est calculé en semaines réelles entre la naissance et l'âge de fin, soit 4174
+semaines pour 80 ans, réparties sur 81 lignes de 52. Une ligne ne vaut donc pas exactement
+une année calendaire, 52 semaines faisant 364 jours.
+
+Kotlin, `minSdk` 26, ni AndroidX ni Compose. Trois fichiers : `Life.kt` pour le calcul,
+`MementoWidget.kt` pour le rendu, `ConfigActivity.kt` pour les réglages.
+
+## Construire
+
+```bash
+./gradlew testDebugUnitTest assembleDebug
+```
+
+Pour publier : incrémenter `versionCode` et `versionName` dans `app/build.gradle.kts`,
+commiter, puis pousser un tag `vX.Y.Z`. La CI construit l'APK signé et le publie en release
+avec son empreinte SHA-256.
