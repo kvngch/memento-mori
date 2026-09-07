@@ -16,10 +16,11 @@ Avec [Obtainium](https://github.com/ImranR98/Obtainium), ajouter une application
 l'URL de ce dépôt : les mises à jour suivent les releases. Sinon, télécharger l'APK de la
 [dernière release](https://github.com/kvngch/memento-mori/releases/latest) et l'installer.
 
-L'application n'a pas d'écran à elle : elle n'apparaît pas dans le tiroir d'applications,
-seulement dans le sélecteur de widgets. Posez le widget, étirez-le à toute la grille de
-l'écran d'accueil, puis renseignez la date de naissance et l'âge de fin dans les deux
-sélecteurs qui s'ouvrent. Un appui sur le widget rouvre ces réglages.
+L'application n'apparaît pas dans le tiroir d'applications, seulement dans le sélecteur de
+widgets. Posez le widget, étirez-le à toute la grille de l'écran d'accueil : un écran de
+réglage s'ouvre et demande la date de naissance et l'âge de fin de vie estimé, en affichant
+la date de fin correspondante et le nombre de semaines que cela représente. Un appui sur le
+widget rouvre cet écran.
 
 ## Fonctionnement
 

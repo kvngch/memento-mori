@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">Memento Mori</string>
     <string name="widget_desc">Votre vie en semaines</string>
+    <string name="config_intro">Le widget affiche votre vie en semaines, une case par semaine.</string>
     <string name="birth_date">Date de naissance</string>
-    <string name="end_age">Âge de fin</string>
+    <string name="end_age">Âge de fin de vie estimé</string>
+    <string name="years">ans</string>
+    <string name="save">Enregistrer</string>
+    <string name="summary">Fin estimée le %1$s\n%2$s semaines en tout, %3$s déjà vécues</string>
 </resources>

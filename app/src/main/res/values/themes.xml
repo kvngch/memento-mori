@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ConfigDialog" parent="@android:style/Theme.DeviceDefault.Dialog.NoActionBar">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="ConfigScreen" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:textColorPrimary">#E6E1D7</item>
+        <item name="android:colorAccent">#C0392B</item>
     </style>
 </resources>
