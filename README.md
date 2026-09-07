@@ -1,14 +1,14 @@
 # Memento Mori
 
-Widget d'écran d'accueil Android qui affiche une vie entière en semaines. Une case par
-semaine, 52 par ligne, donc une ligne par année. Les semaines révolues sont pleines, la
-semaine en cours est rouge, celles qui restent sont éteintes.
+Widget d'écran d'accueil Android qui affiche la vie en semaines. Une case par semaine,
+52 par ligne, donc une ligne par année. Les semaines révolues sont pleines, la semaine en
+cours est rouge, celles qui restent sont éteintes.
 
 <p align="center">
   <img src="docs/apercu.png" width="300" alt="Le widget : une grille de 4174 points, les 1890 premiers en blanc, le suivant en rouge, et 2284 semaines restantes annoncées sous la grille">
 </p>
 
-Sous la grille : le nombre de semaines qui restent, le total, la part déjà vécue.
+Sous la grille, le nombre de semaines qui restent, le total et la part déjà vécue.
 
 ## Installation
 
@@ -21,20 +21,18 @@ seulement dans le sélecteur de widgets. Posez le widget, étirez-le à toute la
 l'écran d'accueil, puis renseignez la date de naissance et l'âge de fin dans les deux
 sélecteurs qui s'ouvrent. Un appui sur le widget rouvre ces réglages.
 
-## Ce qu'il fait, et ce qu'il ne fait pas
+## Fonctionnement
 
-- Aucune permission dans le manifeste, aucune dépendance, aucun réseau, aucune analytique.
-  Les deux réglages restent dans les préférences de l'application.
-- APK de 620 Ko, redessiné une fois par jour.
-- Android 8.0 ou plus récent.
-
-## Sous le capot
+Le manifeste ne déclare aucune permission et l'application n'embarque pas de dépendance.
+La date de naissance et l'âge de fin restent dans ses préférences. L'APK fait 620 Ko et
+demande Android 8.0.
 
 Le widget est un bitmap unique, dessiné au `Canvas` et posé dans un seul `ImageView` :
 une grille de 4174 points ne peut pas être faite de `RemoteViews`. Le système plafonne la
 mémoire d'un widget à six octets par pixel d'écran, donc le bitmap ne dépasse jamais les
 dimensions de l'écran. Comme un bitmap ne dit rien à un lecteur d'écran, le décompte est
-répété en toutes lettres dans la description de contenu.
+répété en toutes lettres dans la description de contenu. Le widget se redessine une fois
+par jour.
 
 Le total est calculé en semaines réelles entre la naissance et l'âge de fin, soit 4174
 semaines pour 80 ans, réparties sur 81 lignes de 52. Une ligne ne vaut donc pas exactement
