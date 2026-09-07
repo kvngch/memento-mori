@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.NumberPicker
+import android.widget.RadioGroup
 import android.widget.TextView
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -25,6 +26,7 @@ class ConfigActivity : Activity() {
     private var birth = LocalDate.now().minusYears(30)
     private lateinit var birthButton: Button
     private lateinit var agePicker: NumberPicker
+    private lateinit var scaleGroup: RadioGroup
     private lateinit var summary: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,17 @@ class ConfigActivity : Activity() {
             setOnValueChangedListener { _, _, _ -> refresh() }
         }
 
+        scaleGroup = findViewById<RadioGroup>(R.id.scale).apply {
+            check(
+                when (scale(this@ConfigActivity)) {
+                    Scale.DAYS -> R.id.scale_days
+                    Scale.WEEKS -> R.id.scale_weeks
+                    Scale.MONTHS -> R.id.scale_months
+                }
+            )
+            setOnCheckedChangeListener { _, _ -> refresh() }
+        }
+
         birthButton.setOnClickListener {
             DatePickerDialog(
                 this,
@@ -70,6 +83,7 @@ class ConfigActivity : Activity() {
         findViewById<Button>(R.id.done).setOnClickListener {
             saveBirth(this, birth)
             saveExpectancy(this, agePicker.value)
+            saveScale(this, selectedScale())
             renderAll(this, widgetId)
             setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId))
             finish()
@@ -78,16 +92,24 @@ class ConfigActivity : Activity() {
         refresh()
     }
 
+    private fun selectedScale(): Scale = when (scaleGroup.checkedRadioButtonId) {
+        R.id.scale_days -> Scale.DAYS
+        R.id.scale_months -> Scale.MONTHS
+        else -> Scale.WEEKS
+    }
+
     private fun refresh() {
         val years = agePicker.value.toLong()
-        val counted = life(birth, LocalDate.now(), years)
+        val scale = selectedScale()
+        val counted = life(birth, LocalDate.now(), years, scale)
         val numbers = NumberFormat.getInstance(Locale.FRANCE)
         birthButton.text = birth.format(DATE)
         summary.text = getString(
             R.string.summary,
             birth.plusYears(years).format(DATE),
             numbers.format(counted.total),
-            numbers.format(counted.lived)
+            scale.noun,
+            numbers.format(counted.remaining)
         )
     }
 }

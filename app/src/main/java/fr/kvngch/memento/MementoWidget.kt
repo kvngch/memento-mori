@@ -20,7 +20,6 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-private const val COLS = 52
 private const val LIVED = 0xFFE6E1D7.toInt()
 private const val NOW = 0xFFC0392B.toInt()
 private const val LEFT = 0xFF262421.toInt()
@@ -48,11 +47,14 @@ fun render(context: Context, manager: AppWidgetManager, id: Int) {
     val options = manager.getAppWidgetOptions(id)
     val width = sizePx(options, AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 320, metrics.density, metrics.widthPixels)
     val height = sizePx(options, AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 400, metrics.density, metrics.heightPixels)
-    val life = birthDate(context)?.let { life(it, LocalDate.now(), expectancy(context).toLong()) }
+    val scale = scale(context)
+    val life = birthDate(context)?.let {
+        life(it, LocalDate.now(), expectancy(context).toLong(), scale)
+    }
 
     val views = RemoteViews(context.packageName, R.layout.widget_memento)
-    views.setImageViewBitmap(R.id.canvas, draw(width, height, life))
-    views.setContentDescription(R.id.canvas, describe(life))
+    views.setImageViewBitmap(R.id.canvas, draw(width, height, life, scale))
+    views.setContentDescription(R.id.canvas, describe(life, scale))
     views.setOnClickPendingIntent(
         R.id.canvas,
         PendingIntent.getActivity(
@@ -81,7 +83,7 @@ private fun sizePx(options: Bundle, key: String, fallbackDp: Int, density: Float
     return min((dp * density).toInt(), cap).coerceAtLeast(1)
 }
 
-private fun draw(width: Int, height: Int, life: Life?): Bitmap {
+private fun draw(width: Int, height: Int, life: Life?, scale: Scale): Bitmap {
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val w = width.toFloat()
@@ -130,40 +132,42 @@ private fun draw(width: Int, height: Int, life: Life?): Bitmap {
 
     text.textSize = labelSize
     text.letterSpacing = 0.25f
-    canvas.drawText("SEMAINES RESTANTES", w / 2f, labelY, text)
+    canvas.drawText(scale.remaining, w / 2f, labelY, text)
     text.letterSpacing = 0f
 
     text.color = LIVED
     text.textSize = bigSize
     canvas.drawText(numbers.format(life.remaining), w / 2f, bigY, text)
 
-    // Une case par semaine, 52 par ligne : une ligne vaut une annee de vie.
-    val rows = ceil(life.total / COLS.toFloat()).toInt()
+    // Une case par unite, une ligne par annee de vie. Les cellules ne sont pas carrees :
+    // 12 mois et 365 jours n'ont pas le meme rapport de forme, et la grille remplit le cadre.
+    val rows = ceil(life.total / scale.cols.toFloat()).toInt()
     val top = pad + titleSize * 2.4f
     val bottom = bigY - bigSize * 1.1f
-    val cell = min((w - 2 * pad) / COLS, (bottom - top) / rows)
-    if (cell < 1f) return bitmap
+    val cellW = (w - 2 * pad) / scale.cols
+    val cellH = (bottom - top) / rows
+    if (cellW < 0.5f || cellH < 0.5f) return bitmap
 
-    val originX = (w - cell * COLS) / 2f
-    val originY = top + ((bottom - top) - cell * rows) / 2f
-    val radius = max(1f, cell * 0.33f)
+    val gap = min(cellW, cellH) * 0.18f
+    // Sous 4 px de large, l'ecart entre deux cases vaut la case elle-meme et la grille
+    // vire a l'aplat : on les joint, chaque ligne devient la barre de son annee.
+    val gapX = if (cellW < 4f) 0f else gap
+    val gapY = cellH * 0.18f
+    val corner = if (gapX == 0f) 0f else (min(cellW, cellH) - 2 * gap) / 2f
     for (i in 0 until life.total) {
         paint.color = when {
             i < life.lived -> LIVED
             i == life.lived -> NOW
             else -> LEFT
         }
-        canvas.drawCircle(
-            originX + (i % COLS + 0.5f) * cell,
-            originY + (i / COLS + 0.5f) * cell,
-            radius,
-            paint
-        )
+        val x = pad + (i % scale.cols) * cellW
+        val y = top + (i / scale.cols) * cellH
+        canvas.drawRoundRect(x + gapX, y + gapY, x + cellW - gapX, y + cellH - gapY, corner, corner, paint)
     }
     return bitmap
 }
 
 // Le widget est un bitmap : sans ceci TalkBack n'a rien a lire.
-private fun describe(life: Life?): String =
+private fun describe(life: Life?, scale: Scale): String =
     if (life == null) "Memento mori, date de naissance à régler"
-    else "Memento mori, ${life.lived} semaines vécues sur ${life.total}, ${life.remaining} restantes"
+    else "Memento mori, il reste ${life.remaining} ${scale.noun} sur ${life.total}"

@@ -71,6 +71,44 @@
         </LinearLayout>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/display"
+            android:textColor="#6E6A63"
+            android:textSize="13sp" />
+
+        <RadioGroup
+            android:id="@+id/scale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/scale_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/unit_days"
+                android:textColor="#E6E1D7" />
+
+            <RadioButton
+                android:id="@+id/scale_weeks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/unit_weeks"
+                android:textColor="#E6E1D7" />
+
+            <RadioButton
+                android:id="@+id/scale_months"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/unit_months"
+                android:textColor="#E6E1D7" />
+        </RadioGroup>
+
+        <TextView
             android:id="@+id/summary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
