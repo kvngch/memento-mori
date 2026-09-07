@@ -48,7 +48,7 @@ fun render(context: Context, manager: AppWidgetManager, id: Int) {
     val options = manager.getAppWidgetOptions(id)
     val width = sizePx(options, AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 320, metrics.density, metrics.widthPixels)
     val height = sizePx(options, AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 400, metrics.density, metrics.heightPixels)
-    val life = birthDate(context)?.let { life(it, LocalDate.now()) }
+    val life = birthDate(context)?.let { life(it, LocalDate.now(), expectancy(context).toLong()) }
 
     val views = RemoteViews(context.packageName, R.layout.widget_memento)
     views.setImageViewBitmap(R.id.canvas, draw(width, height, life))

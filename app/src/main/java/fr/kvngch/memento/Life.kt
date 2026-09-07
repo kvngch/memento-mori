@@ -4,12 +4,12 @@ import android.content.Context
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-// Esperance de vie retenue pour le decompte, en annees.
-// ponytail: constante, un second dialog de reglage si elle doit changer sans rebuild
-const val EXPECTANCY_YEARS = 80L
+// Age de fin par defaut, en annees, tant que rien n'a ete regle.
+const val DEFAULT_EXPECTANCY = 80
 
 private const val PREFS = "memento"
 private const val KEY_BIRTH = "birth"
+private const val KEY_EXPECTANCY = "expectancy"
 
 data class Life(val lived: Int, val total: Int) {
     val remaining: Int get() = total - lived
@@ -17,7 +17,7 @@ data class Life(val lived: Int, val total: Int) {
 }
 
 // Semaines revolues depuis la naissance et semaines que compte la vie entiere.
-fun life(birth: LocalDate, today: LocalDate, years: Long = EXPECTANCY_YEARS): Life {
+fun life(birth: LocalDate, today: LocalDate, years: Long): Life {
     val total = ChronoUnit.WEEKS.between(birth, birth.plusYears(years)).toInt()
     val lived = ChronoUnit.WEEKS.between(birth, today).toInt().coerceIn(0, total)
     return Life(lived, total)
@@ -32,5 +32,16 @@ fun saveBirth(context: Context, date: LocalDate) {
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         .edit()
         .putString(KEY_BIRTH, date.toString())
+        .apply()
+}
+
+fun expectancy(context: Context): Int =
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        .getInt(KEY_EXPECTANCY, DEFAULT_EXPECTANCY)
+
+fun saveExpectancy(context: Context, years: Int) {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        .edit()
+        .putInt(KEY_EXPECTANCY, years)
         .apply()
 }
